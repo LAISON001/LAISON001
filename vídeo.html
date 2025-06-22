@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vídeo Chamada Aleatória</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        #videos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        video {
+            width: 400px;
+            height: 300px;
+            margin: 10px;
+            border: 2px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <div id="videos"></div>
+    <button id="startCall">Iniciar Chamada Aleatória</button>
+
+    <!-- Firebase SDK Modular -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, child, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDsP7lNqu-tDpJxpsyv8t1DW0M_u2EAE3o",
+            authDomain: "bartolomeu-cruz.firebaseapp.com",
+            databaseURL: "https://bartolomeu-cruz-default-rtdb.firebaseio.com",
+            projectId: "bartolomeu-cruz",
+            storageBucket: "bartolomeu-cruz.appspot.com",
+            messagingSenderId: "408863884951",
+            appId: "1:408863884951:web:13e8c2282139c1307dcbd2",
+            measurementId: "G-8TF4WLHKX3"
+        };
+
+        // Inicializando o Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Variáveis para controle de WebRTC
+        let localStream;
+        let peerConnection;
+        const configuration = {
+            iceServers: [{
+                urls: "stun:stun.l.google.com:19302"
+            }]
+        };
+
+        // Captura de vídeo local
+        async function startLocalVideo() {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            const localVideo = document.createElement("video");
+            localVideo.srcObject = stream;
+            localVideo.play();
+            document.getElementById("videos").appendChild(localVideo);
+            localStream = stream;
+        }
+
+        // Função para iniciar a chamada aleatória
+        document.getElementById("startCall").addEventListener("click", function () {
+            startLocalVideo();
+            connectToRandomPeer();
+        });
+
+        // Conectar com um par aleatório (usando Firebase para encontrar outro usuário disponível)
+        async function connectToRandomPeer() {
+            const peersRef = ref(db, 'peers');
+
+            // Adiciona o usuário local à lista de pares disponíveis no Firebase
+            const peerId = Math.random().toString(36).substring(2);
+            set(ref(db, 'peers/' + peerId), { available: true });
+
+            // Escuta por pares disponíveis com onValue
+            onValue(peersRef, (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const peer = childSnapshot.val();
+                    if (peer && childSnapshot.key !== peerId) {
+                        initiateCall(childSnapshot.key);
+                    }
+                });
+            });
+
+            // Inicia a chamada para o par
+            async function initiateCall(peerId) {
+                peerConnection = new RTCPeerConnection(configuration);
+                peerConnection.addStream(localStream);
+                peerConnection.onicecandidate = event => {
+                    if (event.candidate) {
+                        set(ref(db, `calls/${peerId}`), {
+                            candidate: event.candidate,
+                            senderId: peerId
+                        });
+                    }
+                };
+
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                set(ref(db, `calls/${peerId}`), { offer: offer, senderId: peerId });
+            }
+        }
+
+        // Escuta por chamadas de entrada com onValue
+        const callsRef = ref(db, 'calls');
+        onValue(callsRef, (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                const callData = childSnapshot.val();
+                if (callData.offer) {
+                    answerCall(callData.offer, childSnapshot.key);
+                } else if (callData.candidate) {
+                    addIceCandidate(callData.candidate);
+                }
+            });
+        });
+
+        // Responde à chamada
+        async function answerCall(offer, peerId) {
+            peerConnection = new RTCPeerConnection(configuration);
+            peerConnection.addStream(localStream);
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) {
+                    set(ref(db, `calls/${peerId}`), {
+                        candidate: event.candidate,
+                        senderId: peerId
+                    });
+                }
+            };
+
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            set(ref(db, `calls/${peerId}`), {
+                answer: answer,
+                senderId: peerId
+            });
+        }
+
+        // Adiciona o ICE Candidate
+        function addIceCandidate(candidate) {
+            const iceCandidate = new RTCIceCandidate(candidate);
+            peerConnection.addIceCandidate(iceCandidate);
+        }
+    </script>
+</body>
+</html>

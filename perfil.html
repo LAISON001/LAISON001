@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Liaison</title>
+  <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: #212121;
+  color: white;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.cabecalho {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1rem;
+  background: #000;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+#profile-pic, #friend-profile-pic {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid #ff0033;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+#profile-name, #friend-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.profile-info, .friend-profile-info {
+  background: #000;
+  padding: 1rem;
+  border-radius: 12px;
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 350px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.profile-info p, .friend-profile-info p {
+  font-size: 1rem;
+  margin: 0.5rem 0;
+}
+#edit-profile-btn img{
+  width: 2rem;
+  border-radius: 50%;
+height: 2rem;
+}
+#edit-profile-btn {
+  margin-top: 1rem;
+  background: darkred;
+  border: none;
+  position: absolute;
+  top: 3rem;left: 60%;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+  width: 2rem;
+  border: 1px solid black;
+  
+  height: 2rem;
+  transition: background 0.3s;
+}
+
+
+
+
+
+#edit-profile-btn:hover {
+  background: #ff1a66;
+}
+
+.friend-carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 1.5rem;
+  padding: 1rem;
+  margin-top: 2rem;
+  background: #111;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  justify-content: flex-start;
+}
+
+.friend-card {
+  width: 120px;
+  text-align: center;
+  color: white;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 1rem;
+  background: #111;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.friend-card:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 0, 51, 0.6);
+}
+
+.friend-card img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+#friend-profile-section {
+  display: none;
+  background: #111;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 400px;
+  margin: 2rem auto;
+}
+
+#back-to-main-profile {
+  background: #ff0033;
+  border: none;
+  padding: 10px 20px;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#back-to-main-profile:hover {
+  background: #ff1a66;
+}
+
+h4 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 1.5rem;
+  color: white;
+  text-align: center;
+}
+
+p, span, strong {
+  color: white;
+  background: none;
+  font-weight: normal;
+}
+
+#friend-profile-section {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .cabecalho {
+    padding: 1rem;
+  }
+
+  #profile-pic, #friend-profile-pic {
+    width: 100px;
+    height: 100px;
+  }
+
+  .profile-info, .friend-profile-info {
+    max-width: 90%;
+    margin: 0 auto;
+  }
+
+  .friend-card {
+    width: 100px;
+  }
+}
+
+
+    p, span{
+      background: black;
+    }
+    strong{
+      background: black;
+    }
+    .hhh{
+      position: absolute;
+      top: ;
+    }
+  </style>
+  
+  
+  
+  
+</head>
+<body>
+
+  <!-- Perfil Principal -->
+  <div id="main-profile-section">
+    
+    <header class="cabecalho">
+      <img id="profile-pic" src="img/perfil.png" alt="Foto de Perfil" />
+      
+      <br />
+     
+       <p><strong></strong> <span id="profile-name">-</span></p>
+           <div class="profile-info">
+
+    <div class="profile-info">
+
+      <p><strong>Idade:</strong> <span id="profile-age">-</span></p>
+      <p><strong>Gênero:</strong> <span id="profile-gender">-</span></p>
+
+    </div>
+
+    </div>
+
+      <br /><br /><br /><br />
+    </header>
+
+
+    <button id="edit-profile-btn" class="hhh"><img src="editar.png" alt="Editar" /></button>
+  </div>
+
+  <!-- Perfil do Amigo -->
+  <section id="friend-profile-section">
+    <header class="cabecalho">
+      <img id="friend-profile-pic" src="img/user.png" alt="Foto do Amigo" />
+    </header>
+
+    <div class="friend-profile-info">
+      <p><strong>Nome:</strong> <span id="friend-name">-</span></p>
+      <p><strong>Idade:</strong> <span id="friend-age">-</span></p>
+      <p><strong>Gênero:</strong> <span id="friend-gender">-</span></p>
+      <p><strong>Sobre:</strong> <span id="friend-about">-</span></p>
+    </div>
+      <p><strong>Sobre:</strong> <span id="profile-about">-</span></p>
+    <button id="back-to-main-profile">Voltar</button>
+  </section>
+
+  <h4 style="margin: 1rem;">Amigos</h4>
+  <div class="friend-carousel" id="friendCarousel"></div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"></script>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+    import { getStorage, ref as storageRef, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDsP7lNqu-tDpJxpsyv8t1DW0M_u2EAE3o",
+      authDomain: "bartolomeu-cruz.firebaseapp.com",
+      databaseURL: "https://bartolomeu-cruz-default-rtdb.firebaseio.com",
+      projectId: "bartolomeu-cruz",
+      storageBucket: "bartolomeu-cruz.appspot.com",
+      messagingSenderId: "408863884951",
+      appId: "1:408863884951:web:13e8c2282139c1307dcbd2",
+      measurementId: "G-8TF4WLHKX3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const storage = getStorage(app);
+
+    const currentUser = localStorage.getItem("username");
+
+    if (!currentUser) {
+      alert("Você precisa estar logado para ver seu perfil.");
+      window.location.href = "login.html";
+    }
+
+    const loadProfile = async (username, isFriend = false) => {
+      const paths = ["masculino", "feminino"];
+      for (const path of paths) {
+        const userRef = ref(db, `${path}/${username}`);
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+          const user = snapshot.val();
+          if (!isFriend) {
+            document.getElementById("profile-name").textContent = user.username || username;
+            document.getElementById("profile-age").textContent = user.age || "-";
+            document.getElementById("profile-gender").textContent = user.gender || "-";
+            document.getElementById("profile-about").textContent = user.about || "Sem descrição";
+            try {
+              const imageRef = storageRef(storage, `profile_images/${username}`);
+              const url = await getDownloadURL(imageRef);
+              document.getElementById("profile-pic").src = url;
+            } catch {
+              document.getElementById("profile-pic").src = "img/user.png";
+            }
+          } else {
+            document.getElementById("friend-name").textContent = user.username || username;
+            document.getElementById("friend-age").textContent = user.age || "-";
+            document.getElementById("friend-gender").textContent = user.gender || "-";
+            document.getElementById("friend-about").textContent = user.about || "Sem descrição";
+            try {
+              const imageRef = storageRef(storage, `profile_images/${username}`);
+              const url = await getDownloadURL(imageRef);
+              document.getElementById("friend-profile-pic").src = url;
+            } catch {
+              document.getElementById("friend-profile-pic").src = "img/user.png";
+            }
+
+            document.getElementById("main-profile-section").style.display = "none";
+            document.getElementById("friend-profile-section").style.display = "block";
+          }
+          return;
+        }
+      }
+    };
+
+    async function loadMyProfile() {
+      await loadProfile(currentUser);
+    }
+
+    async function loadFriends() {
+      const carousel = document.getElementById("friendCarousel");
+      const amigosRef = ref(db, `amigos/${currentUser}`);
+      const snapshot = await get(amigosRef);
+
+      if (snapshot.exists()) {
+        const friends = snapshot.val();
+        const friendUsernames = Object.keys(friends);
+
+        for (const friend of friendUsernames) {
+          let profileUrl = "img/user.png";
+          try {
+            const imgRef = storageRef(storage, `profile_images/${friend}`);
+            profileUrl = await getDownloadURL(imgRef);
+          } catch {}
+
+          const card = document.createElement("div");
+          card.classList.add("friend-card");
+          card.innerHTML = `
+            <img src="${profileUrl}" alt="${friend}">
+            <p>${friend}</p>
+          `;
+          card.addEventListener("click", async () => {
+            await loadProfile(friend, true);
+          });
+
+          carousel.appendChild(card);
+        }
+      } else {
+        carousel.innerHTML = "<p style='color:white;'>Sem amigos adicionados.</p>";
+      }
+    }
+
+    document.getElementById("edit-profile-btn").addEventListener("click", () => {
+      window.location.href = "editar.html";
+    });
+
+    document.getElementById("back-to-main-profile").addEventListener("click", async () => {
+      document.getElementById("friend-profile-section").style.display = "none";
+      document.getElementById("main-profile-section").style.display = "block";
+      await loadMyProfile();
+    });
+
+    window.onload = async () => {
+      await loadMyProfile();
+      await loadFriends();
+    };
+  </script>
+
+</body>
+</html>

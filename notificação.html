@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notificações</title>
+  <style>
+    body {
+      background-color: #212121;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 0px;
+      margin: 0px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .notification {
+      background-color: #2c2c2c;
+      border-left: 4px solid #7868F0;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+
+    .notification strong {
+      color: #A888F8;
+    }
+
+    .notification time {
+      display: block;
+      font-size: 0.9rem;
+      color: #aaa;
+      margin-top: 5px;
+    }
+    
+    header{
+  width: 100%;
+  height: auto;
+  padding: 1rem;
+  box-shadow: 0 0.1rem 0.5rem black;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+header img{
+  width: 6rem;
+  height: 2rem;
+}
+#profile-pic{
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border-radius: 50%;
+}
+#imagemHade{
+display: flex;
+
+margin-right: 2rem;
+}
+#imagemHade img{
+  width: 2rem;
+height: 2rem;
+border: 1px solid grey;
+background: #212121;
+border-radius: 50%;
+
+margin-left: 1rem;
+
+}
+.menu{
+  margin-top: 2rem;
+  display: flex;
+  
+  justify-content: space-between;
+}
+.menu img{
+  width: 2rem;
+  height: 2rem;
+  margin-left: 2rem;
+}
+.coler{
+  width: 6rem;
+  height: 10rem;
+  margin-left: 1rem;
+  border-radius: 20px;
+  border: 1px solid black;
+}
+.coler img{
+  width: 3rem;
+  height: 3rem;
+  
+  
+  margin-left: 1.5rem;
+}
+.blacker{
+  width: 100%;
+  margin-top: 17vh;
+border-bottom-right-radius: 20px;
+border-bottom-left-radius: 20px;
+  background: ;
+}
+
+
+
+
+
+
+
+
+#principal{
+ 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </style>
+</head>
+<body>
+  <header>
+    <img src="liaison/laison2.png" alt="liaison" />
+    <div id="imagemHade">
+      <img id="profile-pic" src="img/default-profile.png" alt="Foto de Perfil" />
+
+    </div>
+   <div class="menu">
+     <a href="liaison.html" id="a"><img src="liaison/home.png" alt="" /></a>
+     
+     <a href="home.html"><img src="liaison/amigos.png" alt="" /></a>
+     
+     <a href=".html"><img src="liaison/video.png" alt="" /></a>
+     
+     
+     <a href="chat.html" id="a"><img src="liaison/mensagem.png" alt="" /></a>
+     
+     
+     
+     
+     
+
+     
+     
+     
+     <a href="perfil.html"><img src="liaison/perfil.png" alt="" /></a>
+     
+   </div>
+  </header>
+
+  <div id="notificationsContainer">
+    <p>Carregando notificações...</p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDsP7lNqu-tDpJxpsyv8t1DW0M_u2EAE3o",
+      authDomain: "bartolomeu-cruz.firebaseapp.com",
+      databaseURL: "https://bartolomeu-cruz-default-rtdb.firebaseio.com",
+      projectId: "bartolomeu-cruz",
+      storageBucket: "bartolomeu-cruz.appspot.com",
+      messagingSenderId: "408863884951",
+      appId: "1:408863884951:web:13e8c2282139c1307dcbd2",
+      measurementId: "G-8TF4WLHKX3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    const currentUser = localStorage.getItem('username');
+    const container = document.getElementById('notificationsContainer');
+
+    if (!currentUser) {
+      container.innerHTML = "<p>Você precisa estar logado para ver as notificações.</p>";
+    } else {
+      const carregarNotificacoes = async () => {
+        const amigosRef = ref(database, `amigos/${currentUser}`);
+        const amigosSnap = await get(amigosRef);
+
+        if (!amigosSnap.exists()) {
+          container.innerHTML = "<p>Você não tem amigos ainda.</p>";
+          return;
+        }
+
+        container.innerHTML = ''; // Limpa
+
+        const amigos = Object.keys(amigosSnap.val());
+
+        for (const amigo of amigos) {
+          const chatKey = [currentUser, amigo].sort().join('_');
+          const mensagensRef = ref(database, `chats/${chatKey}/messages`);
+          const mensagensSnap = await get(mensagensRef);
+
+          if (!mensagensSnap.exists()) continue;
+
+          // Pega a última mensagem
+          const mensagens = Object.values(mensagensSnap.val());
+          const ultMensagem = mensagens[mensagens.length - 1];
+
+          if (ultMensagem.sender !== currentUser) {
+            const dataTexto = formatarDataRelativa(ultMensagem.timestamp);
+
+            const div = document.createElement('div');
+            div.className = 'notification';
+            div.innerHTML = `
+              <strong>Seu amigo ${amigo}</strong> mandou uma mensagem<br/>
+              <time>${dataTexto}</time>
+            `;
+            container.appendChild(div);
+          }
+        }
+
+        if (container.innerHTML.trim() === '') {
+          container.innerHTML = "<p>Sem novas mensagens de amigos.</p>";
+        }
+      };
+
+      const formatarDataRelativa = (timestamp) => {
+        const agora = new Date();
+        const data = new Date(timestamp);
+        const diff = Math.floor((agora - data) / (1000 * 60 * 60 * 24)); // dias
+
+        if (diff === 0) return 'Hoje';
+        if (diff === 1) return 'Ontem';
+        return `${diff} dias atrás`;
+      };
+
+      carregarNotificacoes();
+    }
+  </script>
+</body>
+</html>
